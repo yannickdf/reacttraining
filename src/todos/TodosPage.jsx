@@ -2,6 +2,7 @@ import React from 'react';
 import { createTodo } from './todoUtils';
 import TodoItem from './TodoItem';
 import TodosFooter from './TodosFooter';
+import TodosMessage from './TodosMessage';
 import './todos.css';
 
 /**
@@ -22,8 +23,10 @@ export default class TodosPage extends React.Component {
          */
 
         this.state = {
+            showCompleted: false,
             headerText: '',
-            todos: []
+            todos: [],
+            allCompleted : false
         }
     }
 
@@ -44,14 +47,24 @@ export default class TodosPage extends React.Component {
                         onKeyPress={(e) => this.handleKeyPressed(e)}/>
                 </div>
 
+                <div>Total: {this.state.todos.length}</div>
+                <div>Incomplete: {this.state.todos.filter((todo) => todo.completed === false).length}</div>
+
+
                 <div className="todos-list">
                     { this.renderTodos() }
                 </div>
             </div>
 
             <TodosFooter
-                showCompleted={false}
+                showCompleted={this.state.showCompleted}
                 setShowCompleted={this.setShowCompleted.bind(this)}/>
+            <br/>
+            <input type="button" value="Clear todos"
+              onClick={() => this.clearTodos()}/>
+            <br/>
+            <TodosMessage
+                allCompleted={this.state.todos.length > 0 && this.state.todos.filter((todo) => todo.completed === false).length === 0}/>
         </div>
     }
 
@@ -59,7 +72,9 @@ export default class TodosPage extends React.Component {
      * Render the todos list
      */
     renderTodos() {
-        return this.state.todos.map((todo) => {
+        return this.state.todos
+          .filter((todo) => todo.completed === false || this.state.showCompleted === true)
+          .map((todo) => {
             return <TodoItem
                 key={todo.id}
                 text={todo.text}
@@ -71,7 +86,7 @@ export default class TodosPage extends React.Component {
     }
 
     handleKeyPressed(e) {
-        if(e.key === 'Enter') {
+        if(e.key === 'Enter' && this.state.headerText !== '') {
             const todo = createTodo(this.state.headerText)
             this.addTodo(todo);
         }
@@ -114,7 +129,14 @@ export default class TodosPage extends React.Component {
     }
 
     setShowCompleted(showCompleted) {
-        /* ??? */
+        this.setState({
+          showCompleted : showCompleted
+        })
+    }
+
+    clearTodos() {
+      this.setState({
+        todos: []
+      })
     }
 }
-
