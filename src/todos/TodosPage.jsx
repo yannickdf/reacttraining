@@ -23,7 +23,8 @@ export default class TodosPage extends React.Component {
 
         this.state = {
             headerText: '',
-            todos: []
+            todos: [],
+            showCompleted: false
         }
     }
 
@@ -32,6 +33,7 @@ export default class TodosPage extends React.Component {
      * Shows a container with a list of todos inside
      */
     render() {
+        const uncompletedTodos = this.state.todos.filter(({ completed }) => !completed);
         return <div className="todos-page">
             <div className="todos-page-content">
                 <div className="todos-header">
@@ -45,13 +47,16 @@ export default class TodosPage extends React.Component {
                 </div>
 
                 <div className="todos-list">
-                    { this.renderTodos() }
+                    { this.state.showCompleted || uncompletedTodos.length > 0 ? this.renderTodos() : <p>All todos completed</p>}
                 </div>
             </div>
 
             <TodosFooter
-                showCompleted={false}
-                setShowCompleted={this.setShowCompleted.bind(this)}/>
+                numberOfTodos={this.state.todos.length}
+                numberOfIncompleteTodos={uncompletedTodos.length}
+                showCompleted={this.state.showCompleted}
+                setShowCompleted={this.setShowCompleted.bind(this)}
+                completeAll={this.completeAll.bind(this)}/>
         </div>
     }
 
@@ -59,21 +64,32 @@ export default class TodosPage extends React.Component {
      * Render the todos list
      */
     renderTodos() {
-        return this.state.todos.map((todo) => {
+        let todos;
+        if(this.state.showCompleted) {
+            todos = this.state.todos;
+        } else {
+            todos = this.state.todos.filter(({ completed }) => !completed);
+        }
+        
+        return todos.map((todo) => {
             return <TodoItem
                 key={todo.id}
                 text={todo.text}
                 id={todo.id}
                 completed={todo.completed}
                 completeTodo={this.completeTodo.bind(this)}
-                removeTodo={this.removeTodo.bind(this)}/>;
+                removeTodo={this.removeTodo.bind(this)}
+                update={this.updateTodoText.bind(this, todo.id)}/>;
         })
     }
 
     handleKeyPressed(e) {
         if(e.key === 'Enter') {
-            const todo = createTodo(this.state.headerText)
-            this.addTodo(todo);
+            const text = this.state.headerText;
+            if(text) {
+                const todo = createTodo(text)
+                this.addTodo(todo);
+            }
         }
     }
 
@@ -114,7 +130,29 @@ export default class TodosPage extends React.Component {
     }
 
     setShowCompleted(showCompleted) {
-        /* ??? */
+        this.setState({
+            showCompleted
+        })
+    }
+
+    completeAll() {
+        this.setState({
+            todos: this.state.todos.map((todo) => {
+                todo.completed = true;
+                return todo;
+            })
+        })
+    }
+
+    updateTodoText(id, text) {
+        this.setState({
+            todos: this.state.todos.map((todo) => {
+                if(todo.id === id) {
+                    todo.text = text;
+                }
+                return todo;
+            })
+        })
     }
 }
 
