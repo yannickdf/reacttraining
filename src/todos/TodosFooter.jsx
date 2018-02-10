@@ -15,9 +15,12 @@ export default function TodosFooter(props) {
                     checked={props.showCompleted}
                     onChange={setShowCompleted}/>Show Completed
             </div>
-            <div><p>{'Number of Todos: ' + props.numberOfTodos}</p></div>
-            <div><p>{'Number of Incomplete Todos: ' + props.numberOfIncompleteTodos}</p></div>
-            <button onClick={props.completeAll}>Complete All</button>
+            <div className="todos-option">
+                <button onClick={props.completeAll}>Complete All</button>´
+            </div>
+            <div className="todos-option">
+                <p>{props.numberOfIncompleteTodos + '/' + props.numberOfTodos}</p>
+            </div>
     </div>
 }
 

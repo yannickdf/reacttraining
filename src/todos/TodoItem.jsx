@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
  * A single todo item on the page.
  * 
  * The item contains some text, a remove button,
- * and a checkbox to select whether the item has been completed.
+ * and a checkbox to toggle whether the item has been completed.
  */
 
 export default function TodoItem(props) {
-    const id = props.id;
-    const completed = props.completed;
-    const text = props.text;
+    const id = props.todo.get('id');
+    const completed = props.todo.get('completed');
+    const text = props.todo.get('text');
 
     const handleCompleted = () => props.completeTodo(id, !completed);
     const handleRemoved = () => props.removeTodo(id);
@@ -32,8 +32,7 @@ export default function TodoItem(props) {
 }
 
 TodoItem.propTypes = {
-    text: PropTypes.string.isRequired,
-    id: PropTypes.number.isRequired,
+    todo: PropTypes.object.isRequired,
     removeTodo: PropTypes.func.isRequired,
     completeTodo: PropTypes.func.isRequired,
     update: PropTypes.func.isRequired

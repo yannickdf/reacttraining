@@ -3,6 +3,7 @@ import { createTodo } from './todoUtils';
 import TodoItem from './TodoItem';
 import TodosFooter from './TodosFooter';
 import './todos.css';
+import Imm from 'immutable';
 
 /**
  * The todos page. Manages a list of todos.
@@ -23,17 +24,20 @@ export default class TodosPage extends React.Component {
 
         this.state = {
             headerText: '',
-            todos: [],
+            todos: Imm.List(),
             showCompleted: false
         }
     }
 
     /**
      * Main render function for the page.
-     * Shows a container with a list of todos inside
+     * A container for a list of todos
      */
     render() {
-        const uncompletedTodos = this.state.todos.filter(({ completed }) => !completed);
+        const uncompletedTodos = this.state.todos.filter((todo) => !todo.get('completed'));
+        const numUncompleted = uncompletedTodos.size;
+        const totalTodos = this.state.todos.size;
+
         return <div className="todos-page">
             <div className="todos-page-content">
                 <div className="todos-header">
@@ -47,13 +51,14 @@ export default class TodosPage extends React.Component {
                 </div>
 
                 <div className="todos-list">
-                    { this.state.showCompleted || uncompletedTodos.length > 0 ? this.renderTodos() : <p>All todos completed</p>}
+                    { this.state.showCompleted || uncompletedTodos.size > 0
+                        ? this.renderTodos() : <p className="todos-completed-info">All Todos Completed</p>}
                 </div>
             </div>
 
             <TodosFooter
-                numberOfTodos={this.state.todos.length}
-                numberOfIncompleteTodos={uncompletedTodos.length}
+                numberOfTodos={totalTodos}
+                numberOfIncompleteTodos={numUncompleted}
                 showCompleted={this.state.showCompleted}
                 setShowCompleted={this.setShowCompleted.bind(this)}
                 completeAll={this.completeAll.bind(this)}/>
@@ -68,15 +73,13 @@ export default class TodosPage extends React.Component {
         if(this.state.showCompleted) {
             todos = this.state.todos;
         } else {
-            todos = this.state.todos.filter(({ completed }) => !completed);
+            todos = this.state.todos.filter((todo) => !todo.get('completed'));
         }
         
         return todos.map((todo) => {
             return <TodoItem
-                key={todo.id}
-                text={todo.text}
-                id={todo.id}
-                completed={todo.completed}
+                key={todo.get('id')}
+                todo={todo}
                 completeTodo={this.completeTodo.bind(this)}
                 removeTodo={this.removeTodo.bind(this)}
                 update={this.updateTodoText.bind(this, todo.id)}/>;
@@ -97,12 +100,12 @@ export default class TodosPage extends React.Component {
     
     /** 
      * Methods to manage the application state.
-     * We make these functions accessible to the child components, by passing through as callback functions.
+     * We make these functions accessible to the child components, by passing through in the props.
      */
 
     addTodo(todo) {
         this.setState({
-            todos: this.state.todos.concat([todo]),
+            todos: this.state.todos.push(todo),
             headerText: ''
         });
     }
@@ -116,15 +119,15 @@ export default class TodosPage extends React.Component {
     removeTodo(id) {
         const todos = this.state.todos;
         this.setState({
-            todos: todos.filter((todo) => todo.id !== id)
+            todos: todos.filter((todo) => todo.get('id') !== id)
         })
     }
 
     completeTodo(id, completed) {
         this.setState({
             todos: this.state.todos.map((todo) => {
-                if(todo.id !== id) return todo;
-                return { ...todo, completed }
+                if(todo.get('id') !== id) return todo;
+                return todo.set('completed', true);
             })
         })
     }
@@ -138,8 +141,7 @@ export default class TodosPage extends React.Component {
     completeAll() {
         this.setState({
             todos: this.state.todos.map((todo) => {
-                todo.completed = true;
-                return todo;
+                return todo.set('completed', true);
             })
         })
     }
@@ -148,7 +150,7 @@ export default class TodosPage extends React.Component {
         this.setState({
             todos: this.state.todos.map((todo) => {
                 if(todo.id === id) {
-                    todo.text = text;
+                    return todo.set('text', text);
                 }
                 return todo;
             })
