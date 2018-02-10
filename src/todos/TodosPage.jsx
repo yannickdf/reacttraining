@@ -77,12 +77,13 @@ export default class TodosPage extends React.Component {
         }
         
         return todos.map((todo) => {
+            const todoId = todo.get('id');
             return <TodoItem
-                key={todo.get('id')}
+                key={todoId}
                 todo={todo}
                 completeTodo={this.completeTodo.bind(this)}
                 removeTodo={this.removeTodo.bind(this)}
-                update={this.updateTodoText.bind(this, todo.id)}/>;
+                update={this.updateTodoText.bind(this, todoId)}/>;
         })
     }
 
@@ -127,7 +128,7 @@ export default class TodosPage extends React.Component {
         this.setState({
             todos: this.state.todos.map((todo) => {
                 if(todo.get('id') !== id) return todo;
-                return todo.set('completed', true);
+                return todo.set('completed', completed);
             })
         })
     }
@@ -149,7 +150,7 @@ export default class TodosPage extends React.Component {
     updateTodoText(id, text) {
         this.setState({
             todos: this.state.todos.map((todo) => {
-                if(todo.id === id) {
+                if(todo.get('id') === id) {
                     return todo.set('text', text);
                 }
                 return todo;

@@ -19,9 +19,10 @@ body * {
 }
 
 .todos-footer {
+  background-color: whitesmoke;
   margin-top: 5px;
   font-size: 0.8em;
-  padding: 0 5px;
+  padding: 2px 5px;
 }
 
 .todos-option {
