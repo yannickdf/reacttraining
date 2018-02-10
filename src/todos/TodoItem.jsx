@@ -12,7 +12,6 @@ export default function TodoItem(props) {
     const id = props.id;
     const completed = props.completed;
     const text = props.text;
-    const index = props.index;
 
     const handleCompleted = () => props.completeTodo(id, !completed);
     const handleRemoved = () => props.removeTodo(id);
@@ -24,7 +23,9 @@ export default function TodoItem(props) {
             checked={completed}
             onChange={handleCompleted}/>
 
-        <span className="todo-item-text">{ text }</span>
+        <input type="text" className="todo-item-text"
+                        value={text}
+                        onChange={(e) => props.update(e.target.value)}/>
 
         <a className="icon right" onClick={handleRemoved}>x</a>
     </div>
@@ -33,7 +34,7 @@ export default function TodoItem(props) {
 TodoItem.propTypes = {
     text: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
-    index: PropTypes.number.isRequired,
     removeTodo: PropTypes.func.isRequired,
-    completeTodo: PropTypes.func.isRequired
+    completeTodo: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired
 }
