@@ -9,6 +9,8 @@ export default function(state = Imm.Map(), action) {
             return setBcConversionInput(state, action);
         case ActionTypes.RECEIVE_LATEST_BC_VALUE:
             return receiveLatestBCValue(state, action);
+        case ActionTypes.SELECT_BCC_CURRENCY:
+            return selectBCCurrency(state, action);
 
         // add more reducer functions here
         // ...
@@ -20,7 +22,7 @@ export default function(state = Imm.Map(), action) {
 }
 
 function incrementCounter(state, action) {
-    return state.set('counter', 0);
+    return state.set('counter', state.get('counter') + 1);
 }
 
 function setBcConversionInput(state, action) {
@@ -29,4 +31,8 @@ function setBcConversionInput(state, action) {
 
 function receiveLatestBCValue(state, action) {
     return state.set('bitcoin', action.result)
+}
+
+function selectBCCurrency(state, action) {
+    return state.set('bcConversionCurrency', action.currency)
 }

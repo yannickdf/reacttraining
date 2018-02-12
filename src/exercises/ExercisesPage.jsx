@@ -3,6 +3,7 @@ import Imm from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import './exercises.css';
+import './utils';
 
 import {
     incrementCounter,
@@ -62,8 +63,8 @@ function ExercisesPage(props) {
                 onChange={(e) => setBcConversionInput(e.target.value) }/>
 
             <span>{ left } {' '} =</span>
-        
-            <div className="value-field">{ '€ ' + bcValueConverted }</div>
+
+            <div className="value-field">{ '€ ' + bcValueConverted * bcConversionInput }</div>
             { right }
         </div>
 
@@ -123,8 +124,8 @@ function mapStateToProps(state) {
         counter: state.exercises.get('counter'),
         bcConversionInput: state.exercises.get('input'),
 
-        bcValue: 999, // TODO
-        bcConversionCurrency: 'EUR', // TODO
+        bcValue: state.exercises.getIn(['bitcoin', 'bpi', state.exercises.get('bcConversionCurrency') === undefined ? 'EUR' : state.exercises.get('bcConversionCurrency'), 'rate_float']),
+        bcConversionCurrency: state.exercises.get('bcConversionCurrency') === undefined ? 'EUR' : state.exercises.get('bcConversionCurrency'),
         bcConversionDirection: false, // TOOD
         bcLastUpdatedTime: '???', // TODO
         bcFetching: false // TODO
